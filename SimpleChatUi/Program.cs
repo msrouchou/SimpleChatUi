@@ -1,9 +1,4 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.SignalR.Client;
 using SimpleChatUi.Components;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,30 +1,36 @@
 ﻿@page "/"
 
+@inject IJSRuntime JSRuntime
+
 <h1>Chat with Bot</h1>
 
-<div class="chat-container" @ref="chatContainer">
+<div class="chat-container">
     @if (_chatHistory.Count > 0)
     {
         @foreach (var entry in BuildChatSequence())
         {
             <div class="chat-message-container">
-                <span class="chat-message-header bi bi-person" aria-hidden="true"></span> You
+                <div class="chat-message-header">
+                    <span class="bi bi-person" aria-hidden="true"></span>You
+                </div>
                 <div class="chat-message user-prompt">@entry.UserMessage</div>
             </div>
             if (!string.IsNullOrEmpty(entry.BotMessage))
             {
                 <div class="chat-message-container">
-                    <span class="chat-message-header bi bi-robot" aria-hidden="true"></span> Assistant
+                    <div class="chat-message-header">
+                        <span class="bi bi-robot" aria-hidden="true"></span>Assistant
+                    </div>
                     <div class="chat-message bot-answer">@entry.BotMessage</div>
                 </div>
             }
         }
     }
-</div>
 
-<div class="input-container">
-    <input @bind="_userMessage" @onkeyup="HandleKeyPress" />
-    <button @onclick="SendMessage">Send</button>
+    <div id="input-container" class="input-container">
+        <input @bind="_userMessage" @onkeyup="HandleKeyPress" />
+        <button @onclick="SendMessage">Send</button>
+    </div>
 </div>
 
 @code {
@@ -36,8 +42,6 @@
 
     private Dictionary<Sender, List<string>> _chatHistory = new();
     private string _userMessage = "";
-
-    private ElementReference chatContainer;
 
     private async Task SendMessage()
     {
@@ -89,6 +93,8 @@
             StateHasChanged();
             await Task.Delay(rnd.Next(10, 1500));
         }
+
+        await ScrollToElementAsync("input-container");
     }
 
     private void AddMessageToHistory(Sender sender, string message)
@@ -111,4 +117,7 @@
         var chatSequence = userMessages.Zip(botMessages.DefaultIfEmpty(), (user, bot) => new { UserMessage = user, BotMessage = bot ?? string.Empty });
         return chatSequence;
     }
+
+    private async Task ScrollToElementAsync(string elementId) =>
+        await JSRuntime.InvokeVoidAsync("scrollToElement", elementId);
 }
