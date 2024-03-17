@@ -1,0 +1,63 @@
+﻿.chat-container {
+    display: flex;
+    flex-direction: column; /* Stack messages vertically */
+    gap: 10px; /* Add space between messages */
+}
+
+.chat-message {
+    flex: 1; /* Each message takes the whole row space */
+}
+
+.user-prompt {
+    align-self: flex-end; /* Align user messages to the right */
+    background-color: #F0F0F0; /* Background color for user messages */
+    padding: 10px; /* Add padding to user messages */
+    border-radius: 5px; /* Add border radius to user messages */
+    max-width: 90%; /* Limit the maximum width to 70% of the available space */
+    word-wrap: break-word; /* Break long words to prevent overflow */
+}
+
+.bot-answer {
+    align-self: flex-start; /* Align bot messages to the left */
+    background-color: #E0E0E0; /* Background color for bot messages */
+    padding: 10px; /* Add padding to bot messages */
+    border-radius: 5px; /* Add border radius to bot messages */
+    max-width: 90%; /* Limit the maximum width to 70% of the available space */
+    word-wrap: break-word; /* Break long words to prevent overflow */
+}
+
+/* CSS for the input container */
+.input-container {
+    display: flex;
+    justify-content: space-between; /* Align input and button at opposite ends */
+    align-items: center; /* Center items vertically */
+    margin-top: 20px; /* Add some margin at the top */
+}
+
+    /* CSS for the input element */
+    .input-container input {
+        flex: 1; /* Input field takes up remaining space */
+        padding: 10px; /* Add padding */
+        border: 1px solid #ccc; /* Add border */
+        border-radius: 5px; /* Add border radius */
+    }
+
+    /* CSS for the button */
+    .input-container button {
+        padding: 10px 20px; /* Add padding */
+        background-color: #007bff; /* Button background color */
+        color: #fff; /* Button text color */
+        border: none; /* Remove border */
+        border-radius: 5px; /* Add border radius */
+        cursor: pointer; /* Change cursor to pointer on hover */
+    }
+
+        /* Hover effect for button */
+        .input-container button:hover {
+            background-color: #0056b3; /* Darker background color on hover */
+        }
+
+
+/*.Bot {
+    background-color: lightgray;
+}*/

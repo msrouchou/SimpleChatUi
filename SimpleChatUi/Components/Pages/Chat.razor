@@ -1,0 +1,95 @@
+﻿@page "/"
+
+<h1>Chat with Bot</h1>
+
+<div class="chat-container" @ref="chatContainer">
+    @foreach (var (sender, messages) in _chatHistory)
+    {
+        @foreach (var message in messages)
+        {
+            <div class="chat-message @(sender == Sender.User ? "user-prompt" : "bot-answer")">@message</div>
+        }
+    }
+</div>
+
+<div class="input-container">
+    <input @bind="_userMessage" @onkeyup="HandleKeyPress" />
+    <button @onclick="SendMessage">Send</button>
+</div>
+
+@code {
+    private enum Sender
+    {
+        User,
+        Bot,
+    }
+
+    private Dictionary<Sender, List<string>> _chatHistory = new();
+    private string _userMessage = "";
+
+    private ElementReference chatContainer;
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(_userMessage))
+            return;
+
+        DisplayUserPrompt();
+
+        await DisplayBotAnswer();
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SendMessage();
+        }
+    }
+
+    private void DisplayUserPrompt()
+    {
+        AddMessageToHistory(Sender.User, _userMessage);
+    }
+
+    private Random rnd = new Random();
+
+    private async Task DisplayBotAnswer()
+    {
+        var chunks = EchoBot.GetAnswer(_userMessage, 10);
+
+        // clear UI input
+        _userMessage = "";
+
+        for (int i = 0; i < chunks.Count; i++)
+        {
+            var chunk = chunks[i];
+            if (i == 0)
+            {
+                AddMessageToHistory(Sender.Bot, chunk);
+            }
+            else
+            {
+                // keep updating the last answer while streaming chunks
+                var currentAnswer = _chatHistory[Sender.Bot].Last();
+                currentAnswer += chunk;
+                _chatHistory[Sender.Bot][_chatHistory[Sender.Bot].Count - 1] = currentAnswer;
+            }
+
+            StateHasChanged();
+            await Task.Delay(rnd.Next(10, 1500));
+        }
+    }
+
+    private void AddMessageToHistory(Sender sender, string message)
+    {
+        if (_chatHistory.TryGetValue(sender, out var userMessages))
+        {
+            _chatHistory[sender].Add(message);
+        }
+        else
+        {
+            _chatHistory.Add(sender, [message]);
+        }
+    }
+}
