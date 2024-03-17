@@ -3,11 +3,21 @@
 <h1>Chat with Bot</h1>
 
 <div class="chat-container" @ref="chatContainer">
-    @foreach (var (sender, messages) in _chatHistory)
+    @if (_chatHistory.Count > 0)
     {
-        @foreach (var message in messages)
+        @foreach (var entry in BuildChatSequence())
         {
-            <div class="chat-message @(sender == Sender.User ? "user-prompt" : "bot-answer")">@message</div>
+            <div class="chat-message-container">
+                <span class="chat-message-header bi bi-person" aria-hidden="true"></span> You
+                <div class="chat-message user-prompt">@entry.UserMessage</div>
+            </div>
+            if (!string.IsNullOrEmpty(entry.BotMessage))
+            {
+                <div class="chat-message-container">
+                    <span class="chat-message-header bi bi-robot" aria-hidden="true"></span> Assistant
+                    <div class="chat-message bot-answer">@entry.BotMessage</div>
+                </div>
+            }
         }
     }
 </div>
@@ -91,5 +101,14 @@
         {
             _chatHistory.Add(sender, [message]);
         }
+    }
+
+    private IEnumerable<dynamic> BuildChatSequence()
+    {
+        var userMessages = _chatHistory.ContainsKey(Sender.User) ? _chatHistory[Sender.User] : new List<string>();
+        var botMessages = _chatHistory.ContainsKey(Sender.Bot) ? _chatHistory[Sender.Bot] : new List<string>();
+
+        var chatSequence = userMessages.Zip(botMessages.DefaultIfEmpty(), (user, bot) => new { UserMessage = user, BotMessage = bot ?? string.Empty });
+        return chatSequence;
     }
 }

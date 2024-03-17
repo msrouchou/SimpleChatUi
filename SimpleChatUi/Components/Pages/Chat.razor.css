@@ -9,21 +9,23 @@
 }
 
 .user-prompt {
-    align-self: flex-end; /* Align user messages to the right */
     background-color: #F0F0F0; /* Background color for user messages */
     padding: 10px; /* Add padding to user messages */
     border-radius: 5px; /* Add border radius to user messages */
-    max-width: 90%; /* Limit the maximum width to 70% of the available space */
-    word-wrap: break-word; /* Break long words to prevent overflow */
+
+    /*align-self: flex-end;*/ /* Align user messages to the right */
+    /*max-width: 90%;*/ /* Limit the maximum width to 70% of the available space */
+    /*word-wrap: break-word;*/ /* Break long words to prevent overflow */
 }
 
 .bot-answer {
-    align-self: flex-start; /* Align bot messages to the left */
     background-color: #E0E0E0; /* Background color for bot messages */
     padding: 10px; /* Add padding to bot messages */
     border-radius: 5px; /* Add border radius to bot messages */
-    max-width: 90%; /* Limit the maximum width to 70% of the available space */
-    word-wrap: break-word; /* Break long words to prevent overflow */
+
+    /*align-self: flex-start;*/ /* Align bot messages to the left */
+    /*max-width: 90%;*/ /* Limit the maximum width to 70% of the available space */
+    /*word-wrap: break-word;*/ /* Break long words to prevent overflow */
 }
 
 /* CSS for the input container */
