@@ -1,4 +1,4 @@
-﻿namespace SimpleChatUi.Components;
+﻿namespace SimpleChatUi;
 
 public class EchoBot
 {

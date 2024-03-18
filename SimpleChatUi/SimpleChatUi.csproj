@@ -8,9 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="Bogus" Version="35.5.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.3" />
-    <PackageReference Include="Microsoft.Bot.Builder" Version="4.22.2" />
-    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.22.2" />
   </ItemGroup>
 
 </Project>

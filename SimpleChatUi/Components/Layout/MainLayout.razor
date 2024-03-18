@@ -6,14 +6,16 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
-
         <article class="content px-4">
             @Body
         </article>
     </main>
+
+    <div class="toast" id="settingsToast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+        <div class="toast-body">
+            Coming Soon
+        </div>
+    </div>
 </div>
 
 @code {
