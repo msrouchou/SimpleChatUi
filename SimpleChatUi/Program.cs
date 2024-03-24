@@ -1,4 +1,6 @@
 using SimpleChatUi.Components;
+using SimpleChatUi.Hubs;
+using SimpleChatUI.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<ChatHubService>();
+builder.Services.AddLogging();
 
 var app = builder.Build();
 
@@ -16,9 +22,17 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
+
+app.UseRouting();
+
 app.UseAntiforgery();
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+var chatHubService = app.Services.GetRequiredService<ChatHubService>();
+await chatHubService.EnsureConnectionAsync();
 
 app.Run();
