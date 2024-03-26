@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using SimpleChatUi.Hubs
 
 @inject IJSRuntime JSRuntime
 
@@ -34,6 +35,10 @@
 </div>
 
 @code {
+
+    [Inject]
+    public required ChatHubService ChatHubService { get; set; }
+
     private enum Sender
     {
         User,
@@ -49,6 +54,9 @@
             return;
 
         DisplayUserPrompt();
+
+        // Call the SignalR method to send the message
+        await ChatHubService.SendMessageToBotAsync(Sender.User.ToString(), _userMessage);
 
         await DisplayBotAnswer();
     }
