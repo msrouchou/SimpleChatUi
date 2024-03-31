@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 
 namespace SimpleChatUi.Hubs
 {
@@ -7,6 +6,8 @@ namespace SimpleChatUi.Hubs
     {
         private readonly HubConnection _hubConnection;
         private readonly ILogger<ChatHubService> _logger;
+
+        public event EventHandler<BotMessageReceivedEventArgs>? BotMessageReceived;
 
         public ChatHubService(ILogger<ChatHubService> logger)
         {
@@ -18,7 +19,7 @@ namespace SimpleChatUi.Hubs
 
             _hubConnection.On("ReceiveBotMessage", (Action<string, string>)((bot, answer) =>
             {
-                ReceiveBotMessage(bot, answer);
+                OnBotMessageReceived(new BotMessageReceivedEventArgs(answer));
             }));
         }
 
@@ -44,6 +45,8 @@ namespace SimpleChatUi.Hubs
             if (_hubConnection is null)
                 return;
 
+            await EnsureConnectionAsync();
+
             try
             {
                 // Call a method on the SignalR hub to send a message
@@ -55,9 +58,15 @@ namespace SimpleChatUi.Hubs
             }
         }
 
-        private void ReceiveBotMessage(string bot, string message)
+        private void OnBotMessageReceived(BotMessageReceivedEventArgs e)
         {
-            _logger.LogWarning($"The bot replied: {bot} - {message}");
+            BotMessageReceived?.Invoke(this, e);
+        }
+
+        public class BotMessageReceivedEventArgs(string answer)
+        : EventArgs
+        {
+            public string Answer { get; } = answer;
         }
     }
 }

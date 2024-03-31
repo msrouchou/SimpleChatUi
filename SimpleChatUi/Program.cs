@@ -9,7 +9,11 @@ builder.Services
     .AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.ClientTimeoutInterval = TimeSpan.FromMinutes(15);
+});
+
 builder.Services.AddSingleton<ChatHubService>();
 builder.Services.AddLogging();
 
