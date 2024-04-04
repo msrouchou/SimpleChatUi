@@ -15,6 +15,7 @@ builder.Services.AddSignalR(options =>
 });
 
 builder.Services.AddSingleton<ChatHubService>();
+
 builder.Services.AddLogging();
 
 var app = builder.Build();

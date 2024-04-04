@@ -1,72 +1,79 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 
-namespace SimpleChatUi.Hubs
+namespace SimpleChatUi.Hubs;
+
+public class ChatHubService
 {
-    public class ChatHubService
+    private readonly HubConnection _hubConnection;
+    private readonly ILogger<ChatHubService> _logger;
+
+    public event EventHandler<BotAnswerReceivedEventArgs>? BotMessageReceived;
+
+    public ChatHubService(ILogger<ChatHubService> logger)
     {
-        private readonly HubConnection _hubConnection;
-        private readonly ILogger<ChatHubService> _logger;
+        _logger = logger;
 
-        public event EventHandler<BotMessageReceivedEventArgs>? BotMessageReceived;
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl("http://localhost:6217/chatHub")
+            .Build();
 
-        public ChatHubService(ILogger<ChatHubService> logger)
+        _hubConnection.On("ReceiveBotMessage", (Action<string, string>)((user, answer) =>
         {
-            _logger = logger;
+            OnBotMessageReceived(new BotAnswerReceivedEventArgs(user, answer));
+        }));
+    }
 
-            _hubConnection = new HubConnectionBuilder()
-                .WithUrl("http://localhost:6217/chatHub")
-                .Build();
-
-            _hubConnection.On("ReceiveBotMessage", (Action<string, string>)((bot, answer) =>
-            {
-                OnBotMessageReceived(new BotMessageReceivedEventArgs(answer));
-            }));
-        }
-
-        public async Task EnsureConnectionAsync()
+    public async Task EnsureConnectionAsync()
+    {
+        while (_hubConnection.State != HubConnectionState.Connected)
         {
-            while (_hubConnection.State != HubConnectionState.Connected)
-            {
-                try
-                {
-                    await _hubConnection.StartAsync();
-                    _logger.LogInformation($"(｡◕‿‿◕｡) Connected to {_hubConnection.ConnectionId}!");
-                }
-                catch (Exception)
-                {
-                    _logger.LogWarning($"*** Not Connected: {_hubConnection.State}");
-                    await Task.Delay(TimeSpan.FromSeconds(2));
-                }
-            }
-        }
-
-        public async Task SendMessageToBotAsync(string user, string message)
-        {
-            if (_hubConnection is null)
-                return;
-
-            await EnsureConnectionAsync();
-
             try
             {
-                // Call a method on the SignalR hub to send a message
-                await _hubConnection.SendAsync("ReceiveUserPrompt", user, message);
+                await _hubConnection.StartAsync();
+                _logger.LogInformation($"(｡◕‿‿◕｡) Connected to {_hubConnection.ConnectionId}!");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError($"Error sending message to SignalR hub: {ex.Message}");
+                _logger.LogWarning($"*** Not Connected: {_hubConnection.State}");
+                await Task.Delay(TimeSpan.FromSeconds(2));
             }
         }
+    }
 
-        private void OnBotMessageReceived(BotMessageReceivedEventArgs e)
+    public async Task SendMessageToBotAsync(string user, string message)
+    {
+        if (_hubConnection is null)
+            return;
+
+        await EnsureConnectionAsync();
+
+        try
         {
-            BotMessageReceived?.Invoke(this, e);
+            // Call a method on the SignalR hub to send a message
+            await _hubConnection.SendAsync("ReceiveUserPrompt", user, message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error sending message to SignalR hub: {ex.Message}");
+        }
+    }
+
+    private readonly List<string> answerDebug = [];
+    private void OnBotMessageReceived(BotAnswerReceivedEventArgs e)
+    {
+        answerDebug.Add(e.Answer);
+        if (e.Answer.Equals("%%%DONE%%"))
+        {
+            _logger.LogInformation($"{nameof(OnBotMessageReceived)} for user {{User}}", e.User);
+            answerDebug.Clear();
         }
 
-        public class BotMessageReceivedEventArgs(string answer)
-        : EventArgs
-        {
-            public string Answer { get; } = answer;
-        }
+        BotMessageReceived?.Invoke(this, e);
+    }
+
+    public class BotAnswerReceivedEventArgs(string user, string answer) : EventArgs
+    {
+        public string User { get; } = user;
+        public string Answer { get; } = answer;
     }
 }
