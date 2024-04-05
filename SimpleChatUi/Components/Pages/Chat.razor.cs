@@ -47,7 +47,7 @@ namespace SimpleChatUi.Components.Pages
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            await ScrollToElementAsync("input-container");
+            await BottomScroll();
         }
 
         private async Task SendMessage()
@@ -75,45 +75,7 @@ namespace SimpleChatUi.Components.Pages
 
         private async Task DisplayUserPrompt() => await AddMessageToHistory(Sender.User, _userMessage);
 
-        private readonly Random rnd = new Random();
-
-        private async Task DisplayBotAnswer(bool isEchoBot)
-        {
-            if (isEchoBot)
-            {
-                var chunks = EchoBot.GetAnswer(_userMessage, 10);
-
-                // clear UI input
-                _userMessage = "";
-
-                for (int i = 0; i < chunks.Count; i++)
-                {
-                    var chunk = chunks[i];
-                    if (i == 0)
-                    {
-                        await AddMessageToHistory(Sender.Bot, chunk);
-                    }
-                    else
-                    {
-                        // keep updating the last answer while streaming chunks
-                        var currentAnswer = _chatHistory[Sender.Bot].Last().Value;
-                        currentAnswer += chunk;
-                        _chatHistory[Sender.Bot][_chatHistory[Sender.Bot].Count - 1] = new MarkupString(currentAnswer);
-                    }
-
-                    StateHasChanged();
-                    await Task.Delay(rnd.Next(0, 1000));
-
-                    return;
-                }
-            }
-
-            await ScrollToElementAsync("input-container");
-        }
-
         int tokenIndex;
-
-
         int codeDelimiterCounter;
         int codeBlockDelimiterCounter;
 
@@ -216,6 +178,45 @@ namespace SimpleChatUi.Components.Pages
             return chatSequence;
         }
 
+        private async Task BottomScroll() => await ScrollToElementAsync("input-container");
+
         private async Task ScrollToElementAsync(string elementId) => await JSRuntime.InvokeVoidAsync("scrollToElement", elementId);
+
+
+        private readonly Random rnd = new();
+
+        private async Task DisplayBotAnswer(bool isEchoBot)
+        {
+            if (isEchoBot)
+            {
+                var chunks = EchoBot.GetAnswer(_userMessage, 10);
+
+                // clear UI input
+                _userMessage = "";
+
+                for (int i = 0; i < chunks.Count; i++)
+                {
+                    var chunk = chunks[i];
+                    if (i == 0)
+                    {
+                        await AddMessageToHistory(Sender.Bot, chunk);
+                    }
+                    else
+                    {
+                        // keep updating the last answer while streaming chunks
+                        var currentAnswer = _chatHistory[Sender.Bot].Last().Value;
+                        currentAnswer += chunk;
+                        _chatHistory[Sender.Bot][_chatHistory[Sender.Bot].Count - 1] = new MarkupString(currentAnswer);
+                    }
+
+                    StateHasChanged();
+                    await Task.Delay(rnd.Next(0, 1000));
+
+                    return;
+                }
+            }
+
+            await BottomScroll();
+        }
     }
 }
