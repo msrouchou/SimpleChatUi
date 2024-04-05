@@ -5,23 +5,8 @@
     {
         @foreach (var entry in BuildChatSequence())
         {
-            // User Prompt
-            <div class="chat-message-container">
-                <div class="chat-message-header">
-                    <span class="bi bi-person" aria-hidden="true" />
-                    <label>@_currentUser</label>
-                </div>
-                <div class="chat-message user-prompt">@entry.UserMessage</div>
-            </div>
-
-            // AI Answer
-            <div class="chat-message-container">
-                <div class="chat-message-header">
-                    <span class="bi bi-robot" aria-hidden="true" />
-                    <label>Assistant</label>
-                </div>
-                <div class="chat-message bot-answer">@entry.BotMessage</div>
-            </div>
+            <ChatMessage Entity="@_currentUser" Message="@entry.UserMessage" IsUser="true" />
+            <ChatMessage Entity="Assistant" Message="@entry.BotMessage" IsUser="false" />
         }
     }
 

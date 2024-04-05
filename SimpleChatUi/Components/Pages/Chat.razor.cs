@@ -171,8 +171,8 @@ namespace SimpleChatUi.Components.Pages
 
         private IEnumerable<dynamic> BuildChatSequence()
         {
-            var userMessages = _chatHistory.ContainsKey(Sender.User) ? _chatHistory[Sender.User] : [];
-            var botMessages = _chatHistory.ContainsKey(Sender.Bot) ? _chatHistory[Sender.Bot] : [];
+            var userMessages = _chatHistory.TryGetValue(Sender.User, out List<MarkupString>? value) ? value : [];
+            var botMessages = _chatHistory.TryGetValue(Sender.Bot, out List<MarkupString>? botValue) ? botValue : [];
 
             var chatSequence = userMessages.Zip(botMessages.DefaultIfEmpty(), (user, bot) => new { UserMessage = user, BotMessage = bot });
             return chatSequence;
