@@ -1,0 +1,34 @@
+﻿.chat-message-container {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 20px;
+    width: 100%;
+}
+
+.chat-message-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+    .chat-message-header .bi {
+        padding-right: 8px;
+    }
+
+    .chat-message-header label {
+        font-weight: bold;
+    }
+
+.chat-message {
+    border-radius: 5px;
+    width: 100%;
+    word-wrap: break-word;
+    line-height: 1.75;
+}
+
+.user-prompt,
+.bot-answer {
+    border: none;
+    padding: 5px 24px;
+    background-color: transparent;
+}

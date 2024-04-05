@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace SimpleChatUi.Hubs;
 
@@ -7,7 +7,8 @@ public class ChatHubService
     private readonly HubConnection _hubConnection;
     private readonly ILogger<ChatHubService> _logger;
 
-    public event EventHandler<BotAnswerReceivedEventArgs>? BotMessageReceived;
+    //public delegate void BotMessageReceivedEventHandler(object? sender, BotAnswerReceivedEventArgs e);
+    public event Action<object?, BotAnswerReceivedEventArgs>? BotMessageReceived;
 
     public ChatHubService(ILogger<ChatHubService> logger)
     {
@@ -17,9 +18,9 @@ public class ChatHubService
             .WithUrl("http://localhost:6217/chatHub")
             .Build();
 
-        _hubConnection.On("ReceiveBotMessage", (Action<string, string>)((user, answer) =>
+        _hubConnection.On("ReceiveBotMessage", (Action<string, string, bool>)((bot, answer, isDone) =>
         {
-            OnBotMessageReceived(new BotAnswerReceivedEventArgs(user, answer));
+            OnBotMessageReceived(new BotAnswerReceivedEventArgs(bot, answer, isDone));
         }));
     }
 
@@ -58,22 +59,8 @@ public class ChatHubService
         }
     }
 
-    private readonly List<string> answerDebug = [];
     private void OnBotMessageReceived(BotAnswerReceivedEventArgs e)
     {
-        answerDebug.Add(e.Answer);
-        if (e.Answer.Equals("%%%DONE%%"))
-        {
-            _logger.LogInformation($"{nameof(OnBotMessageReceived)} for user {{User}}", e.User);
-            answerDebug.Clear();
-        }
-
         BotMessageReceived?.Invoke(this, e);
-    }
-
-    public class BotAnswerReceivedEventArgs(string user, string answer) : EventArgs
-    {
-        public string User { get; } = user;
-        public string Answer { get; } = answer;
     }
 }
