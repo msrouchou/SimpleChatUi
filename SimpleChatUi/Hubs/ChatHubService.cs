@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 namespace SimpleChatUi.Hubs;
 
-public class ChatHubService
+public class ChatHubService : IAsyncDisposable
 {
     private readonly HubConnection _hubConnection;
     private readonly ILogger<ChatHubService> _logger;
@@ -62,5 +62,13 @@ public class ChatHubService
     private void OnBotMessageReceived(BotAnswerReceivedEventArgs e)
     {
         BotMessageReceived?.Invoke(this, e);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.DisposeAsync();
+        }
     }
 }
