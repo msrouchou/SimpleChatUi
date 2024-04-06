@@ -26,7 +26,7 @@ namespace SimpleChatUi.Components.Pages
             Bot,
         }
 
-        private readonly Dictionary<Sender, List<MarkupString>> _chatHistory = [];
+        private readonly Dictionary<Sender, List<string>> _chatHistory = [];
         private string _userMessage = string.Empty;
         private readonly MarkdownPipeline? _markdownPipeline;
 
@@ -111,7 +111,7 @@ namespace SimpleChatUi.Components.Pages
             {
                 Logger.LogInformation("Rendering final response for user {User}...", botEvent.TargetUser);
 
-                var fullAnswer = Markdig.Markdown.ToHtml(_chatHistory[Sender.Bot][lastAnswerIndex].Value, _markdownPipeline);
+                var fullAnswer = Markdig.Markdown.ToHtml(_chatHistory[Sender.Bot][lastAnswerIndex], _markdownPipeline);
                 _chatHistory[Sender.Bot][lastAnswerIndex] = new(fullAnswer);
 
                 await UpdateStateAsync();
@@ -152,6 +152,7 @@ namespace SimpleChatUi.Components.Pages
             if (_chatHistory.TryGetValue(sender, out var messages))
             {
                 _chatHistory[sender].Add(new(answer));
+                //messages.Add(new(answer));
             }
             else
             {
@@ -171,8 +172,8 @@ namespace SimpleChatUi.Components.Pages
 
         private IEnumerable<dynamic> BuildChatSequence()
         {
-            var userMessages = _chatHistory.TryGetValue(Sender.User, out List<MarkupString>? value) ? value : [];
-            var botMessages = _chatHistory.TryGetValue(Sender.Bot, out List<MarkupString>? botValue) ? botValue : [];
+            var userMessages = _chatHistory.TryGetValue(Sender.User, out List<string>? value) ? value : [];
+            var botMessages = _chatHistory.TryGetValue(Sender.Bot, out List<string>? botValue) ? botValue : [];
 
             var chatSequence = userMessages.Zip(botMessages.DefaultIfEmpty(), (user, bot) => new { UserMessage = user, BotMessage = bot });
             return chatSequence;
@@ -204,15 +205,15 @@ namespace SimpleChatUi.Components.Pages
                     else
                     {
                         // keep updating the last answer while streaming chunks
-                        var currentAnswer = _chatHistory[Sender.Bot].Last().Value;
+                        var currentAnswer = _chatHistory[Sender.Bot].Last();
                         currentAnswer += chunk;
-                        _chatHistory[Sender.Bot][_chatHistory[Sender.Bot].Count - 1] = new MarkupString(currentAnswer);
+                        _chatHistory[Sender.Bot][_chatHistory[Sender.Bot].Count - 1] = currentAnswer;
                     }
 
                     StateHasChanged();
                     await Task.Delay(rnd.Next(0, 1000));
 
-                    return;
+                    //return;
                 }
             }
 
