@@ -13,6 +13,8 @@
 
     .chat-message-header .bi {
         padding-right: 8px;
+        font-size: 24px;
+        margin-left: -8px;
     }
 
     .chat-message-header label {

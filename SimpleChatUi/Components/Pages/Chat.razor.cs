@@ -83,8 +83,7 @@ namespace SimpleChatUi.Components.Pages
         {
             if (!botEvent.TargetUser.Equals(_currentUser))
             {
-                var truncatedAnswer = botEvent.Answer[..Math.Min(botEvent.Answer.Length, 10)];
-                Logger.LogDebug("Received irrelevant answer ({TruncatedAnswer}) for {IrrelevantUser} while current chat is for {User}", truncatedAnswer, botEvent.TargetUser, _currentUser);
+                Logger.LogDebug("Received irrelevant answer for {IrrelevantUser} while current chat is for {User}", botEvent.TargetUser, _currentUser);
                 return;
             }
 
@@ -112,7 +111,7 @@ namespace SimpleChatUi.Components.Pages
                 Logger.LogInformation("Rendering final response for user {User}...", botEvent.TargetUser);
 
                 var fullAnswer = Markdig.Markdown.ToHtml(_chatHistory[Sender.Bot][lastAnswerIndex], _markdownPipeline);
-                _chatHistory[Sender.Bot][lastAnswerIndex] = new(fullAnswer);
+                _chatHistory[Sender.Bot][lastAnswerIndex] = fullAnswer;
 
                 await UpdateStateAsync();
 
@@ -151,12 +150,12 @@ namespace SimpleChatUi.Components.Pages
         {
             if (_chatHistory.TryGetValue(sender, out var messages))
             {
-                _chatHistory[sender].Add(new(answer));
-                //messages.Add(new(answer));
+                //_chatHistory[sender].Add(answer);
+                messages.Add(answer);
             }
             else
             {
-                _chatHistory.Add(sender, [new(answer)]);
+                _chatHistory.Add(sender, [answer]);
             }
 
             await UpdateStateAsync();

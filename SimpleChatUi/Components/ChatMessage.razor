@@ -1,6 +1,6 @@
 ﻿<div class="chat-message-container">
     <div class="chat-message-header">
-        <span class="bi @(IsUser ? "bi-person" : "bi-robot")" aria-hidden="true"></span>
+        <span class="bi @(IsUser ? "bi-person text-info" : "bi-robot text-success")" aria-hidden="true"></span>
         <label>@Entity</label>
     </div>
     <div class="chat-message @(IsUser ? "user-prompt" : "bot-answer")">@_messageMarkup</div>

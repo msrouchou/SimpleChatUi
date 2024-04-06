@@ -1,3 +1,4 @@
+using Serilog;
 using SimpleChatUi.Components;
 using SimpleChatUi.Hubs;
 using SimpleChatUI.Hubs;
@@ -16,7 +17,9 @@ builder.Services.AddSignalR(options =>
 
 builder.Services.AddSingleton<ChatHubService>();
 
-builder.Services.AddLogging();
+// Serilog
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 
 var app = builder.Build();
 
