@@ -40,7 +40,7 @@ app.MapHub<ChatHub>("/chatHub");
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
+app.Run();
+
 var chatHubService = app.Services.GetRequiredService<ChatHubService>();
 await chatHubService.EnsureConnectionAsync();
-
-app.Run();
