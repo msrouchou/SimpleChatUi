@@ -113,6 +113,7 @@ namespace SimpleChatUi.Components.Pages
                 var fullAnswer = Markdig.Markdown.ToHtml(_chatHistory[Sender.Bot][lastAnswerIndex], _markdownPipeline);
                 _chatHistory[Sender.Bot][lastAnswerIndex] = fullAnswer;
 
+                await BottomScroll();
                 await UpdateStateAsync();
 
                 tokenIndex = 0;

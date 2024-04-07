@@ -1,4 +1,4 @@
-@page "/"
+@page "/chat"
 
 <div class="chat-container">
     @if (_chatHistory.Count > 0)
@@ -19,7 +19,7 @@
                @bind="_userMessage"
                @onkeyup="HandleKeyPress" />
         <div class="input-group-append" m8>
-            <span class="bi bi-send" type="button" @onclick="SendMessage"></span>
+            <span class="bi bi-arrow-up-square-fill button" type="button" @onclick="SendMessage"></span>
         </div>
     </div>
 </div>
