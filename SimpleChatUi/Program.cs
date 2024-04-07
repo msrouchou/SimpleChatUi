@@ -1,9 +1,13 @@
 using Serilog;
 using SimpleChatUi.Components;
+using SimpleChatUi.Configuration;
 using SimpleChatUi.Hubs;
+using SimpleChatUi.Providers;
 using SimpleChatUI.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<AiServiceConfiguration>(builder.Configuration.GetSection("AiService"));
 
 // Add services to the container.
 builder.Services
@@ -20,6 +24,15 @@ builder.Services.AddSingleton<ChatHubService>();
 // Serilog
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
+
+// Backend AiService API Client (settings, etc.)
+builder.Services.AddHttpClient(nameof(AiServiceClient), client =>
+{
+    var uri = (builder.Configuration.GetValue<string>("AiService:Uri")) ?? throw new InvalidOperationException($"{nameof(AiServiceConfiguration.Uri)} is not configured.");
+    client.BaseAddress = new(uri);
+});
+
+builder.Services.AddSingleton<AiServiceClient>();
 
 var app = builder.Build();
 
@@ -40,7 +53,8 @@ app.MapHub<ChatHub>("/chatHub");
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.Run();
-
 var chatHubService = app.Services.GetRequiredService<ChatHubService>();
 await chatHubService.EnsureConnectionAsync();
+
+app.Run();
+
