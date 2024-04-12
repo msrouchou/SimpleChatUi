@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Options;
+using SimpleChatUi.Configuration;
 
 namespace SimpleChatUi.Hubs;
 
@@ -10,12 +12,14 @@ public class ChatHubService : IAsyncDisposable
     //public delegate void BotMessageReceivedEventHandler(object? sender, BotAnswerReceivedEventArgs e);
     public event Action<object?, BotAnswerReceivedEventArgs>? BotMessageReceived;
 
-    public ChatHubService(ILogger<ChatHubService> logger)
+    public ChatHubService(ILogger<ChatHubService> logger, IOptions<AiServiceConfiguration> aiServiceConfigOptions)
     {
         _logger = logger;
 
+        var aiServiceConfig = aiServiceConfigOptions.Value;
+
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("http://localhost:6217/chatHub")
+            .WithUrl(new Uri(aiServiceConfig.Uri + "/" + aiServiceConfig.ChatHubEndpoint))
             .Build();
 
         _hubConnection.On("ReceiveBotMessage", (Action<string, string, bool>)((bot, answer, isDone) =>

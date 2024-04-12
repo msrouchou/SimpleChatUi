@@ -2,4 +2,27 @@
 
 <PageTitle>Settings</PageTitle>
 
-🏗️ Under construction 🏗️
+<div class="container mt-5">
+    <h1>Settings</h1>
+
+    <h5 class="mt-4">Available Providers</h5>
+    <ul class="list-group">
+        @foreach (var provider in _aiProviders)
+        {
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-3 font-weight-bold">Name:</div>
+                    <div class="col-sm-9">@provider.Name</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 font-weight-bold">URI:</div>
+                    <a class="col-sm-9" href="@provider.Uri" target="_blank">@provider.Uri</a>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 font-weight-bold">Model:</div>
+                    <div class="col-sm-9">@provider.Model</div>
+                </div>
+            </li>
+        }
+    </ul>
+</div>
